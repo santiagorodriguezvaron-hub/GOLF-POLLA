@@ -2,12 +2,12 @@
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Arial, Helvetica, sans-serif;
+    font-family:Arial,Helvetica,sans-serif;
 }
 
 body{
-    background:#f2f4f7;
-    padding:40px;
+    background:#f3f5f7;
+    padding:30px;
 }
 
 .container{
@@ -22,27 +22,21 @@ h1{
 }
 
 .card{
-    background:white;
-    border-radius:12px;
+    background:#fff;
     padding:20px;
+    border-radius:12px;
     margin-bottom:20px;
-    box-shadow:0 4px 12px rgba(0,0,0,.08);
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
 }
 
-h2{
+.card h2{
     margin-bottom:15px;
     color:#1b4332;
 }
 
-h3{
-    margin-top:20px;
-    margin-bottom:8px;
-    color:#2d6a4f;
-}
-
 label{
     display:block;
-    margin-top:15px;
+    margin-top:12px;
     margin-bottom:6px;
     font-weight:bold;
 }
@@ -51,75 +45,128 @@ input,
 select,
 textarea{
     width:100%;
-    padding:12px;
-    border:1px solid #ccc;
+    padding:10px;
+    border:1px solid #d9d9d9;
     border-radius:8px;
-    font-size:16px;
-}
-
-input[readonly]{
-    background:#f7f7f7;
-    font-weight:bold;
+    font-size:15px;
 }
 
 textarea{
     resize:vertical;
 }
 
-button{
-    width:100%;
-    margin-top:25px;
-    padding:15px;
-    border:none;
-    border-radius:10px;
-    background:#2d6a4f;
-    color:white;
-    font-size:18px;
-    cursor:pointer;
-    transition:.2s;
+.resumen{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
 }
 
-button:hover{
-    background:#1b4332;
+.dato span{
+    display:block;
+    margin-bottom:6px;
+    font-weight:bold;
+}
+
+button{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:18px;
+    font-weight:bold;
+    margin-top:15px;
+}
+
+#btnCalcular{
+    background:#1b7c3a;
+    color:white;
+}
+
+#btnCalcular:hover{
+    background:#145c2b;
+}
+
+#btnWhatsapp{
+    background:#25D366;
+    color:white;
+    margin-top:20px;
+}
+
+#cardsGanadores{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+    margin-top:25px;
+    margin-bottom:25px;
+}
+
+.cardWinner{
+    background:white;
+    border-radius:12px;
+    padding:18px;
+    box-shadow:0 3px 10px rgba(0,0,0,.08);
+    text-align:center;
+}
+
+.cardWinner h3{
+    margin-bottom:12px;
+    color:#1b4332;
+}
+
+.cardWinner .nombre{
+    font-size:20px;
+    font-weight:bold;
+    margin:8px 0;
+}
+
+.cardWinner .valor{
+    font-size:24px;
+    color:#0b7a33;
+    font-weight:bold;
 }
 
 table{
     width:100%;
     border-collapse:collapse;
-    margin-top:15px;
+    margin-top:20px;
+    background:white;
+    box-shadow:0 3px 10px rgba(0,0,0,.08);
 }
 
 th{
-    background:#2d6a4f;
+    background:#1b4332;
     color:white;
     padding:12px;
 }
 
 td{
-    padding:10px;
-    border-bottom:1px solid #ddd;
+    padding:12px;
+    text-align:center;
+    border-bottom:1px solid #ececec;
+}
+
+tr:nth-child(even){
+    background:#fafafa;
 }
 
 tr:hover{
-    background:#f7f7f7;
-}
-
-hr{
-    margin:20px 0;
-}
-
-#resultado h3{
-    margin-top:15px;
+    background:#f0f8f2;
 }
 
 @media(max-width:700px){
 
     body{
-        padding:15px;
+        padding:12px;
     }
 
-    .card{
-        padding:15px;
+    table{
+        font-size:13px;
+    }
+
+    th,
+    td{
+        padding:8px;
     }
 
 }

@@ -10,187 +10,225 @@ playersInput.addEventListener("input", actualizarValores);
 betInput.addEventListener("change", actualizarValores);
 beersInput.addEventListener("input", actualizarValores);
 
-document
-    .getElementById("btnCalcular")
-    .addEventListener("click", calcular);
+document.getElementById("btnCalcular").addEventListener("click", calcular);
 
-function formato(valor){
+const btnWhatsapp = document.getElementById("btnWhatsapp");
 
-    return valor.toLocaleString("es-CO",{
-        style:"currency",
-        currency:"COP",
-        maximumFractionDigits:0
-    });
-
-}
-
-function actualizarValores(){
+function actualizarValores() {
 
     const jugadores = Number(playersInput.value);
     const apuesta = Number(betInput.value);
 
-    if(jugadores<=0) return;
+    if (!jugadores) return;
 
     const pozo = jugadores * apuesta;
 
-    const sugerido = Math.round((pozo*0.10)/1000)*1000;
+    let sugerido = Math.round((pozo * 0.10) / 1000) * 1000;
 
     pozoInput.value = formato(pozo);
-
     sugeridaInput.value = formato(sugerido);
 
-    if(
-        beersInput.value==="" ||
-        Number(beersInput.value)==0
-    ){
-        beersInput.value=sugerido;
+    if (beersInput.value === "" || Number(beersInput.value) === 0) {
+        beersInput.value = sugerido;
     }
 
-    premiosInput.value=formato(
-
-        pozo-Number(beersInput.value)
-
-    );
+    premiosInput.value = formato(pozo - Number(beersInput.value));
 
 }
 
 actualizarValores();
 
-function leerRanking(texto){
+function leerRanking(texto) {
 
-    const ranking=[];
+    const ranking = [];
 
-    texto.trim().split("\n").forEach(linea=>{
+    texto.trim().split("\n").forEach(linea => {
 
-        linea=linea.trim();
+        linea = linea.trim();
 
-        if(linea==="") return;
+        if (linea === "") return;
 
-        const partes=linea.split(" ");
+        const partes = linea.split(/\s+/);
 
-        const score=Number(partes.pop());
+        const score = Number(partes.pop());
 
-        const nombre=partes.join(" ");
+        const nombre = partes.join(" ");
 
         ranking.push({
-
             nombre,
             score
-
         });
 
     });
-
-    ranking.sort((a,b)=>a.score-b.score);
 
     return ranking;
 
 }
 
-function calcular(){
+function calcular() {
 
-    const general=leerRanking(
-        document.getElementById("general").value
-    );
+    const resultado = liquidarPolla({
 
-    const ida=leerRanking(
-        document.getElementById("ida").value
-    );
-
-    const vuelta=leerRanking(
-        document.getElementById("vuelta").value
-    );
-
-    if(
-        general.length===0 ||
-        ida.length===0 ||
-        vuelta.length===0
-    ){
-
-        alert("Debe ingresar los resultados.");
-
-        return;
-
-    }
-
-    const resultado=liquidarPolla({
-
-        jugadores:Number(playersInput.value),
-
-        apuesta:Number(betInput.value),
-
-        cervezas:Number(beersInput.value)
+        jugadores: Number(playersInput.value),
+        apuesta: Number(betInput.value),
+        cervezas: Number(beersInput.value)
 
     },
 
-    general,
-    ida,
-    vuelta);
+    leerRanking(document.getElementById("general").value),
+    leerRanking(document.getElementById("ida").value),
+    leerRanking(document.getElementById("vuelta").value)
+
+    );
 
     mostrarResultado(resultado);
 
 }
 
+function ganador(detalle){
+
+    const nombres = Object.keys(detalle);
+
+    if(nombres.length===0) return null;
+
+    let ganador=nombres[0];
+
+    nombres.forEach(nombre=>{
+
+        if(detalle[nombre]>detalle[ganador]){
+
+            ganador=nombre;
+
+        }
+
+    });
+
+    return{
+
+        nombre:ganador,
+
+        premio:detalle[ganador]
+
+    };
+
+}
+
 function mostrarResultado(resultado){
 
-    let html="";
+    const gGeneral=ganador(resultado.detalle.general);
+    const gIda=ganador(resultado.detalle.ida);
+    const gVuelta=ganador(resultado.detalle.vuelta);
 
-    html+=`
-        <h3>Resumen</h3>
+    document.getElementById("cardsGanadores").innerHTML=`
 
-        <p><b>Pozo:</b> ${formato(resultado.bolsa.pozo)}</p>
+    <div class="cardWinner">
 
-        <p><b>Cervezas:</b> ${formato(resultado.bolsa.cervezas)}</p>
+        <h3>🏆 General</h3>
 
-        <p><b>Premios:</b> ${formato(resultado.bolsa.premios)}</p>
+        <div class="nombre">${gGeneral.nombre}</div>
 
-        <hr>
+        <div class="valor">${formato(gGeneral.premio)}</div>
 
-        <table>
+    </div>
+
+    <div class="cardWinner">
+
+        <h3>🥇 Primera vuelta</h3>
+
+        <div class="nombre">${gIda.nombre}</div>
+
+        <div class="valor">${formato(gIda.premio)}</div>
+
+    </div>
+
+    <div class="cardWinner">
+
+        <h3>🔥 Segunda vuelta</h3>
+
+        <div class="nombre">${gVuelta.nombre}</div>
+
+        <div class="valor">${formato(gVuelta.premio)}</div>
+
+    </div>
+
+    `;
+
+    let jugadores=Object.entries(resultado.jugadores);
+
+    jugadores.sort((a,b)=>b[1].total-a[1].total);
+
+    let html=`
+
+    <table>
 
         <tr>
 
-        <th>Jugador</th>
+            <th>Jugador</th>
 
-        <th>Total ganado</th>
+            <th>General</th>
+
+            <th>Ida</th>
+
+            <th>Vuelta</th>
+
+            <th>Total</th>
 
         </tr>
+
     `;
 
-    const lista=[];
+    let whatsapp=`🏌️ GOLF POLLA\n\n`;
 
-    for(const jugador in resultado.premios){
+    whatsapp+=`👥 Jugadores: ${playersInput.value}\n`;
+    whatsapp+=`💰 Pozo: ${formato(resultado.bolsa.pozo)}\n`;
+    whatsapp+=`🍺 Cervezas: ${formato(resultado.bolsa.cervezas)}\n\n`;
 
-        lista.push({
+    jugadores.forEach((j,index)=>{
 
-            nombre:jugador,
+        let medal="";
 
-            dinero:resultado.premios[jugador]
-
-        });
-
-    }
-
-    lista.sort((a,b)=>b.dinero-a.dinero);
-
-    lista.forEach(j=>{
+        if(index===0) medal="🥇";
+        else if(index===1) medal="🥈";
+        else if(index===2) medal="🥉";
 
         html+=`
 
         <tr>
 
-            <td>${j.nombre}</td>
+            <td>${medal} ${j[0]}</td>
 
-            <td>${formato(j.dinero)}</td>
+            <td>${j[1].general?formato(j[1].general):"-"}</td>
+
+            <td>${j[1].ida?formato(j[1].ida):"-"}</td>
+
+            <td>${j[1].vuelta?formato(j[1].vuelta):"-"}</td>
+
+            <td><b>${formato(j[1].total)}</b></td>
 
         </tr>
 
         `;
+
+        whatsapp+=`${medal} ${j[0]}\n`;
+        whatsapp+=`General: ${j[1].general?formato(j[1].general):"-"}\n`;
+        whatsapp+=`Ida: ${j[1].ida?formato(j[1].ida):"-"}\n`;
+        whatsapp+=`Vuelta: ${j[1].vuelta?formato(j[1].vuelta):"-"}\n`;
+        whatsapp+=`TOTAL: ${formato(j[1].total)}\n\n`;
 
     });
 
     html+="</table>";
 
     document.getElementById("resultado").innerHTML=html;
+
+    btnWhatsapp.style.display="block";
+
+    btnWhatsapp.onclick=()=>{
+
+        navigator.clipboard.writeText(whatsapp);
+
+        alert("Resultados copiados al portapapeles.");
+
+    };
 
 }

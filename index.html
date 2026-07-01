@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Golf Polla</title>
-
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
 <div class="container">
@@ -18,104 +16,90 @@
 
         <h2>Configuración</h2>
 
-        <label>Valor de la apuesta</label>
+        <label>Número de jugadores</label>
+        <input id="players" type="number" min="2" value="18">
 
+        <label>Valor apuesta</label>
         <select id="bet">
-            <option value="50000">$50.000</option>
-            <option value="75000">$75.000</option>
+            <option value="20000">$20.000</option>
+            <option value="30000">$30.000</option>
+            <option value="50000" selected>$50.000</option>
+            <option value="100000">$100.000</option>
         </select>
 
-        <label>Número de jugadores</label>
-
-        <input
-            type="number"
-            id="players"
-            min="2"
-            value="18">
-
-        <hr>
-
-        <label>Pozo total</label>
-
-        <input
-            type="text"
-            id="pozo"
-            readonly>
-
-        <label>10% sugerido para cervezas</label>
-
-        <input
-            type="text"
-            id="cervezaSugerida"
-            readonly>
-
-        <label>Valor final para cervezas</label>
-
-        <input
-            type="number"
-            id="cervezas"
-            step="1000">
-
-        <label>Premios a repartir</label>
-
-        <input
-            type="text"
-            id="premios"
-            readonly>
-
     </div>
 
-    <div class="card">
+    <div class="card resumen">
 
-        <h2>Resultados</h2>
+        <div class="dato">
+            <span>💰 Pozo</span>
+            <input id="pozo" readonly>
+        </div>
 
-        <p>
-            Por ahora escriba los resultados así:
-            <br><br>
-            Santiago 67
-            <br>
-            Martín 68
-            <br>
-            Juan 69
-        </p>
+        <div class="dato">
+            <span>🍺 10% sugerido</span>
+            <input id="cervezaSugerida" readonly>
+        </div>
 
-        <h3>General</h3>
+        <div class="dato">
+            <span>🍻 Cervezas</span>
+            <input id="cervezas" type="number" step="1000">
+        </div>
 
-        <textarea
-            id="general"
-            rows="6"></textarea>
-
-        <h3>Primera vuelta</h3>
-
-        <textarea
-            id="ida"
-            rows="6"></textarea>
-
-        <h3>Segunda vuelta</h3>
-
-        <textarea
-            id="vuelta"
-            rows="6"></textarea>
-
-        <button id="btnCalcular">
-
-            🏆 Liquidar Polla
-
-        </button>
-
-    </div>
-
-    <div class="card">
-
-        <h2>Resultado</h2>
-
-        <div id="resultado">
-
-            Esperando cálculo...
-
+        <div class="dato">
+            <span>🏆 Premios</span>
+            <input id="premios" readonly>
         </div>
 
     </div>
+
+    <div class="card">
+
+        <h2>General</h2>
+
+        <textarea
+            id="general"
+            rows="10"
+            placeholder="Santiago 67&#10;Martin 68&#10;Juan 69"></textarea>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Primera vuelta</h2>
+
+        <textarea
+            id="ida"
+            rows="10"
+            placeholder="Santiago 33&#10;Martin 34"></textarea>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Segunda vuelta</h2>
+
+        <textarea
+            id="vuelta"
+            rows="10"
+            placeholder="Santiago 34&#10;Martin 35"></textarea>
+
+    </div>
+
+    <button id="btnCalcular">
+        🏆 LIQUIDAR POLLA
+    </button>
+
+    <!-- NUEVO -->
+    <div id="cardsGanadores"></div>
+
+    <!-- TABLA -->
+    <div id="resultado"></div>
+
+    <!-- NUEVO -->
+    <button id="btnWhatsapp" style="display:none;">
+        📋 Copiar para WhatsApp
+    </button>
 
 </div>
 

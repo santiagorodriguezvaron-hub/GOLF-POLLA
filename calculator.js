@@ -1,4 +1,4 @@
-function formatoPesos(valor) {
+function formato(valor) {
     return valor.toLocaleString("es-CO", {
         style: "currency",
         currency: "COP",
@@ -9,7 +9,6 @@ function formatoPesos(valor) {
 function calcularBolsa(jugadores, apuesta, cervezas) {
 
     const pozo = jugadores * apuesta;
-
     const premios = pozo - cervezas;
 
     return {
@@ -25,66 +24,57 @@ function calcularBolsa(jugadores, apuesta, cervezas) {
 
 function repartirCategoria(bolsa, ranking) {
 
-    const premios = {};
+    ranking.sort((a,b)=>a.score-b.score);
 
-    if (ranking.length === 0) return premios;
+    const resultado={};
 
-    ranking.sort((a, b) => a.score - b.score);
+    if(ranking.length===0) return resultado;
 
-    const primerScore = ranking[0].score;
-    const primeros = ranking.filter(j => j.score === primerScore);
+    const primero=ranking[0].score;
+
+    const primeros=ranking.filter(x=>x.score===primero);
 
     // Empate en primero
-    if (primeros.length > 1) {
 
-        const premio = bolsa / primeros.length;
+    if(primeros.length>1){
 
-        primeros.forEach(j => {
+        const premio=bolsa/primeros.length;
 
-            premios[j.nombre] = premio;
+        primeros.forEach(j=>{
+
+            resultado[j.nombre]=premio;
 
         });
 
-        return premios;
+        return resultado;
 
     }
 
-    premios[primeros[0].nombre] = bolsa * 0.70;
+    resultado[primeros[0].nombre]=bolsa*0.70;
 
-    const restantes = ranking.filter(j => j.score !== primerScore);
+    const restantes=ranking.filter(x=>x.score!==primero);
 
-    if (restantes.length === 0)
-        return premios;
+    if(restantes.length===0) return resultado;
 
-    const segundoScore = restantes[0].score;
+    const segundo=restantes[0].score;
 
-    const segundos = restantes.filter(j => j.score === segundoScore);
+    const segundos=restantes.filter(x=>x.score===segundo);
 
-    const premioSegundo = (bolsa * 0.30) / segundos.length;
+    const premioSegundo=(bolsa*0.30)/segundos.length;
 
-    segundos.forEach(j => {
+    segundos.forEach(j=>{
 
-        premios[j.nombre] = (premios[j.nombre] || 0) + premioSegundo;
+        resultado[j.nombre]=(resultado[j.nombre]||0)+premioSegundo;
 
     });
 
-    return premios;
+    return resultado;
 
 }
 
-function sumarPremios(total, categoria) {
+function liquidarPolla(config,general,ida,vuelta){
 
-    for (const jugador in categoria) {
-
-        total[jugador] = (total[jugador] || 0) + categoria[jugador];
-
-    }
-
-}
-
-function liquidarPolla(config, general, ida, vuelta) {
-
-    const bolsa = calcularBolsa(
+    const bolsa=calcularBolsa(
 
         config.jugadores,
         config.apuesta,
@@ -92,17 +82,56 @@ function liquidarPolla(config, general, ida, vuelta) {
 
     );
 
-    const total = {};
+    const premioGeneral=repartirCategoria(bolsa.general,general);
 
-    sumarPremios(total, repartirCategoria(bolsa.general, general));
-    sumarPremios(total, repartirCategoria(bolsa.ida, ida));
-    sumarPremios(total, repartirCategoria(bolsa.vuelta, vuelta));
+    const premioIda=repartirCategoria(bolsa.ida,ida);
 
-    return {
+    const premioVuelta=repartirCategoria(bolsa.vuelta,vuelta);
+
+    const jugadores={};
+
+    function agregar(categoria,nombre){
+
+        for(const jugador in categoria){
+
+            if(!jugadores[jugador]){
+
+                jugadores[jugador]={
+
+                    general:0,
+                    ida:0,
+                    vuelta:0,
+                    total:0
+
+                };
+
+            }
+
+            jugadores[jugador][nombre]+=categoria[jugador];
+
+            jugadores[jugador].total+=categoria[jugador];
+
+        }
+
+    }
+
+    agregar(premioGeneral,"general");
+    agregar(premioIda,"ida");
+    agregar(premioVuelta,"vuelta");
+
+    return{
 
         bolsa,
 
-        premios: total
+        jugadores,
+
+        detalle:{
+
+            general:premioGeneral,
+            ida:premioIda,
+            vuelta:premioVuelta
+
+        }
 
     };
 
